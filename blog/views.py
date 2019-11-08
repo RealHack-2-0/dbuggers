@@ -7,6 +7,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
+from oauth2_provider.views.generic import ProtectedResourceView
+from django.http import HttpResponse
 
 def home(request):
     context ={
@@ -15,6 +17,44 @@ def home(request):
     }
     return render(request, 'blog/home.html', context)
 
+class ApiEndpoint(APIView):
+
+
+    def get(self, request):
+        taglist = request.data['tags']
+        taglist = taglist.split(';')
+
+        questions = Post.objects.all()
+        qlist = []
+        for question in questions:
+            tags = question.tags
+            if tags:
+                tags = tags.split(',')
+                temp = []
+                for tag in tags:
+                    if tag in taglist:
+                        temp.append({
+                            'title': question.title,
+                            'content': question.content
+                        })
+                        qlist += (temp)
+                        break
+        return Response(qlist)
+
+    def post(self, request):
+
+        username = request.data['username']
+        title = request.data['title']
+        content = request.data['content']
+        tags = request.data['tags']
+
+        prof = User.objects.get(username=username)
+        prof = prof.id
+
+        new_post = Post(title=title, content=content, tags=tags, author_id=prof)
+        new_post.save()
+        content = {'message': 'Question posted'}
+        return Response(content)
 class RestView(APIView):
     permission_classes = (IsAuthenticated,)
 
