@@ -1,0 +1,155 @@
+    {% extends "blog/base.html" %}
+    {% block content %}
+
+     {% load staticfiles %}
+<div id="dis">
+
+
+
+    </div>
+
+        <div id="chat"></div>
+
+        <article class="media content-section">
+            <div>
+              <img class ="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
+            <div class="pointCart" style="margin-left: 10px;;">
+                   {% if voted == 0 %}
+              <a href="{% url 'post-upvote' object.id %}"><i    class="material-icons"  style="font-size:30px;">
+                expand_less
+              </i></a>
+                 {% endif %}
+                <br>
+                <i style="font-size:20px;">{{vote}}</i>
+                <br>
+        {% if voted == 0 %}
+        <a href="{% url 'post-downvote' object.id %}"><i    class="material-icons"  style="font-size:30px;">
+                expand_more
+              </i></a>
+        {% endif %}
+            </div>
+                <br>
+                <div>
+                     {% if object.read == 1 %}
+        <i class="material-icons" style="margin-left: 10px;">
+            check_circle
+            </i>
+                      <p>Answered</p>
+                    {% endif %}
+    </div>
+
+            </div>
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ object.author }}</a>
+              <small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
+                {% if object.author == user %}
+                <div>
+                    <a class = "btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-update' object.id %}">Update</a>
+                    <a class = "btn btn-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' object.id %}">Delete post</a>
+
+                </div>
+
+                <br>
+                {% if object.read == 0 %}
+                  <h6>Did you get the Answers ?</h6>
+
+          <form method="POST">
+              {% csrf_token %}
+
+              <div class="form-group">
+
+                  <button class = "btn btn-secondary btn-sm mt-1 mb-1" type="submit" name ="found">
+                      Yes
+                  </button>
+              </div>
+          </form>
+                 {% endif %}
+
+                {% endif %}
+            </div>
+            <h2 class="article-title">{{ object.title }}</h2>
+            <p class="article-content">{{ object.content }}</p>
+
+            <hr>
+
+   <p>
+
+      <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+       Answer to the Question
+      </button>
+    </p>
+    <div class="collapse" id="collapseExample">
+      <div class="card card-body">
+
+
+          <form method="POST" id="chatform">
+              {% csrf_token %}
+              <fieldset class="form-group">
+                  <legend class="border-bottom mb-4">
+                     Answer to the question
+                  </legend>
+
+              </fieldset>
+              <div class="form-group">
+                  <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name = "answer"></textarea>
+                  <br>
+                  <button class="btn btn-outline-info" type="submit" id ="sub1" >
+                      Post
+                  </button>
+              </div>
+          </form>
+
+      </div>
+
+
+    
+
+
+          </div>
+
+
+          
+          </div>
+        </article>
+
+     <br>
+
+        <h4>Answers</h4>
+        <hr>
+    {% for answer in answers %}
+     <div class="answer">
+            <article class="media content-section">
+
+              <div class="media-body">
+                <div class="article-metadata">
+                  <a class="mr-2" href="#">{{ answer.author }}</a>
+                  <small class="text-muted">{{ answer.date_posted|date:"F d, Y" }}</small>
+
+
+
+                </div>
+
+
+                <p class="article-content">{{ answer.content }}</p>
+                <hr>
+
+
+              </div>
+            </article>
+        </div>
+    {%endfor%}
+
+<script>
+          function displayMessage(mes){
+          if(mes == {{object.author_id}}){
+             document.getElementById('dis').innerHTML=" <div class='alert alert-success' role='alert'> Some one is answered for this problem </div> ";
+          }
+          }
+        </script>
+    {% endblock content %}
+
+
+    {% block afterbody %}
+
+{% endblock afterbody %}
